@@ -17,7 +17,7 @@ export interface ArticleData {
   org: Org;
   req_id: string;
   status: Status;
-  theme_list: any[];
+  theme_list: [];
   extra: Extra;
 }
 
@@ -98,7 +98,7 @@ export interface AuthorUserInfo {
   annual_list_type: number;
   extraMap: ExtraMap;
   is_logout: number;
-  annual_info: any[];
+  annual_info: [];
   account_amount: number;
   user_growth_info: UserGrowthInfo;
   is_vip: boolean;
@@ -130,7 +130,7 @@ export interface UserGrowthInfo {
   jpower_level: number;
   jscore_level: number;
   jscore_title: string;
-  author_achievement_list: any[];
+  author_achievement_list: [];
   vip_level: number;
   vip_title: string;
   jscore_next_level_score: number;

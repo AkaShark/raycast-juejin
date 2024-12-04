@@ -12,7 +12,7 @@
   "commands": [
     {
       "name": "news",
-      "title": "news articles",
+      "title": "News Articles",
       "description": "展示掘金推荐文章，根据类型请求不同类型的推荐文章",
       "mode": "view"
     }
