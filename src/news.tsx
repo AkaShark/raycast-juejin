@@ -5,6 +5,7 @@ import { ArticleData, RecommendFeedRespDto } from "./Dto/recommendRespDto";
 import { RecommendNews } from "./model/recommendNews";
 import { RecommendFeedCategory } from "./utils/recommendFeedCategory";
 import { RecommendFeedItem } from "./components/recommendFeedItem";
+import RecommendFeedCategoryDropdown from "./components/RecommendFeedCategoryDropdown";
 
 interface RecommendList {
   list: RecommendNews[];
@@ -12,12 +13,8 @@ interface RecommendList {
 
 export default function Command() {
   const [list, setList] = useState<RecommendList>({ list: [] });
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    requestRecommendFeed();
-  }, []);
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  let category = RecommendFeedCategory.iOS;
 
   function requestRecommendFeed() {
     recommendApi.recommendFeed({
@@ -28,12 +25,12 @@ export default function Command() {
       client_type: 6587,
       cursor: "0",
       id_type: 1,
-      cate_id: RecommendFeedCategory.iOS,
+      cate_id: category,
       sort_type: 200
     }).then((res) => {
       try {
         const data = res.data as RecommendFeedRespDto
-        if (data.err_no !== 0) {
+        if (data.err_no !== 0 || !data.data) {
           showToast({
             title: "请求失败",
             message: data.err_msg,
@@ -76,10 +73,25 @@ export default function Command() {
   }
 
   return (
-    <List isLoading={isLoading}>
+    <List 
+        isLoading={isLoading}
+        searchBarAccessory={
+          <RecommendFeedCategoryDropdown onChange={(value) => {
+            category = value;
+            requestRecommendFeed();
+          }}/>
+        }
+    >
       {list.list.length === 0 ? <List.EmptyView /> : 
         list.list.map((item) => {
-          return <RecommendFeedItem aritcleId={item.articleId} title={item.title} readTime={item.readTime} viewCount={item.viewCount.toString()} commentCount={item.commentCount.toString()}/>
+          return <RecommendFeedItem 
+                    key={item.articleId}
+                    articleId={item.articleId} 
+                    title={item.title} 
+                    readTime={item.readTime} 
+                    viewCount={item.viewCount.toString()} 
+                    commentCount={item.commentCount.toString()}
+          />
         })
       }
     </List>

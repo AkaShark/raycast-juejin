@@ -1,7 +1,7 @@
 import { Color, List } from "@raycast/api";
 import { RecommendFeedAction } from "./recommendFeedAction";
 
-export function RecommendFeedItem({aritcleId, title, readTime, viewCount, commentCount}: {aritcleId: string, title: string, readTime: string, viewCount: string, commentCount: string}) {
+export function RecommendFeedItem({articleId, title, readTime, viewCount, commentCount}: {articleId: string, title: string, readTime: string, viewCount: string, commentCount: string}) {
     return (
         <List.Item
             title={title}
@@ -20,7 +20,7 @@ export function RecommendFeedItem({aritcleId, title, readTime, viewCount, commen
                 }
                }
             ]}
-            actions={<RecommendFeedAction articleId={aritcleId} />}
+            actions={<RecommendFeedAction articleId={articleId} />}
         />
     );
 }
