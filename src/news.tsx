@@ -1,11 +1,10 @@
 import { List, showToast, Toast } from "@raycast/api";
-import { useEffect, useState } from "react";
-import { recommendApi } from "./api/recommend";
-import { ArticleData, RecommendFeedRespDto } from "./Dto/recommendRespDto";
+import { useState } from "react";
 import { RecommendNews } from "./model/recommendNews";
 import { RecommendFeedCategory } from "./utils/recommendFeedCategory";
 import { RecommendFeedItem } from "./components/recommendFeedItem";
-import RecommendFeedCategoryDropdown from "./components/RecommendFeedCategoryDropdown";
+import RecommendFeedCategoryDropdown from "./components/recommendFeedCategoryDropdown";
+import { requestRecommendFeed } from "./recommend/recommend";
 
 interface RecommendList {
   list: RecommendNews[];
@@ -16,65 +15,19 @@ export default function Command() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   let category = RecommendFeedCategory.iOS;
 
-  function requestRecommendFeed() {
+  function fetchRecommendFeed() {
     setIsLoading(true);
-    
-    recommendApi.recommendFeed({
-      uuid: "7293568760983307826",
-      aid: "6587"
-    }, {
-      limit: 10,
-      client_type: 6587,
-      cursor: "0",
-      id_type: 1,
-      cate_id: category,
-      sort_type: 200
-    }).then((res) => {
+    requestRecommendFeed(category, (list: RecommendNews[]) => {
       setIsLoading(false);
-
-      try {
-        const data = res.data as RecommendFeedRespDto
-        if (data.err_no !== 0 || !data.data) {
-          showToast({
-            title: "请求失败",
-            message: data.err_msg,
-            style: Toast.Style.Failure
-          })
-          console.log(`request juejin recommend feed error: ${data.err_msg}`);
-        } else {
-          console.log(data.data);
-          parseRecommendNews(data.data);
-        }
-      } catch (error) {
-        setIsLoading(false);
-        showToast({
-          title: "请求失败",
-          message: error as string,
-          style: Toast.Style.Failure
-        })
-        console.log(`request juejin recommend feed error: ${error}`);
-      }
-    })
-
-    function parseRecommendNews(data: ArticleData[]) {
-      let list: RecommendNews[] = [];
-      data.forEach((item) => {
-        let news = {
-          articleId: item.article_id,
-          title: item.article_info.title,
-          subTitle: item.article_info.brief_content,
-          readTime: item.article_info.read_time,
-          viewCount: item.article_info.view_count,
-          collectCount: item.article_info.collect_count,
-          diggCount: item.article_info.digg_count,
-          commentCount: item.article_info.comment_count,
-          userName: item.author_user_info.user_name,
-          categoryName: item.category.category_name,
-        }
-        list.push(news);
+      setList({list: list});
+    }, (err: string) => {
+      setIsLoading(false);
+      showToast({
+        title: "获取推荐列表失败",
+        message: err,
+        style: Toast.Style.Failure
       })
-      setList({list: list})
-    }
+    });
   }
 
   return (
@@ -83,14 +36,15 @@ export default function Command() {
         searchBarAccessory={
           <RecommendFeedCategoryDropdown onChange={(value) => {
             category = value;
-            requestRecommendFeed();
+            fetchRecommendFeed();
           }}/>
         }
     >
       {list.list.length === 0 ? <List.EmptyView /> : 
-        list.list.map((item) => {
+        list.list.map((item, index) => {
           return <RecommendFeedItem 
                     key={item.articleId}
+                    index={index}
                     articleId={item.articleId} 
                     title={item.title} 
                     readTime={item.readTime} 

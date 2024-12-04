@@ -1,9 +1,11 @@
 import { Color, List } from "@raycast/api";
 import { RecommendFeedAction } from "./recommendFeedAction";
+import { getIcon } from "./recommendFeedIcon";
 
-export function RecommendFeedItem({articleId, title, readTime, viewCount, commentCount}: {articleId: string, title: string, readTime: string, viewCount: string, commentCount: string}) {
+export function RecommendFeedItem({index, articleId, title, readTime, viewCount, commentCount}: {index: number, articleId: string, title: string, readTime: string, viewCount: string, commentCount: string}) {
     return (
         <List.Item
+            icon={getIcon(index)}
             title={title}
             subtitle={readTime}
             accessories={[
