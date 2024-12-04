@@ -17,42 +17,52 @@ export default function Command() {
 
   function fetchRecommendFeed() {
     setIsLoading(true);
-    requestRecommendFeed(category, (list: RecommendNews[]) => {
-      setIsLoading(false);
-      setList({list: list});
-    }, (err: string) => {
-      setIsLoading(false);
-      showToast({
-        title: "获取推荐列表失败",
-        message: err,
-        style: Toast.Style.Failure
-      })
-    });
+    requestRecommendFeed(
+      category,
+      (list: RecommendNews[]) => {
+        setIsLoading(false);
+        setList({ list: list });
+      },
+      (err: string) => {
+        setIsLoading(false);
+        showToast({
+          title: "获取推荐列表失败",
+          message: err,
+          style: Toast.Style.Failure,
+        });
+      },
+    );
   }
 
   return (
-    <List 
-        isLoading={isLoading}
-        searchBarAccessory={
-          <RecommendFeedCategoryDropdown onChange={(value) => {
+    <List
+      isLoading={isLoading}
+      searchBarAccessory={
+        <RecommendFeedCategoryDropdown
+          onChange={(value) => {
             category = value;
             fetchRecommendFeed();
-          }}/>
-        }
-    >
-      {list.list.length === 0 ? <List.EmptyView /> : 
-        list.list.map((item, index) => {
-          return <RecommendFeedItem 
-                    key={item.articleId}
-                    index={index}
-                    articleId={item.articleId} 
-                    title={item.title} 
-                    readTime={item.readTime} 
-                    viewCount={item.viewCount.toString()} 
-                    commentCount={item.commentCount.toString()}
-          />
-        })
+          }}
+        />
       }
+    >
+      {list.list.length === 0 ? (
+        <List.EmptyView />
+      ) : (
+        list.list.map((item, index) => {
+          return (
+            <RecommendFeedItem
+              key={item.articleId}
+              index={index}
+              articleId={item.articleId}
+              title={item.title}
+              readTime={item.readTime}
+              viewCount={item.viewCount.toString()}
+              commentCount={item.commentCount.toString()}
+            />
+          );
+        })
+      )}
     </List>
   );
 }

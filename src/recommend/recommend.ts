@@ -13,7 +13,6 @@ export function requestRecommendFeed(
   onSuccess: (data: RecommendNews[]) => void,
   onError: (error: string) => void,
 ) {
-
   const cachedData = cache.get(categoryId);
   if (cachedData) {
     const cachedEntry = JSON.parse(cachedData);
@@ -48,12 +47,15 @@ export function requestRecommendFeed(
           onError("请求失败");
         } else {
           console.log(data.data);
-          
+
           const list = parseRecommendNews(data.data);
-          cache.set(categoryId, JSON.stringify({
-            timestamp: Date.now(),
-            list: list
-          }))
+          cache.set(
+            categoryId,
+            JSON.stringify({
+              timestamp: Date.now(),
+              list: list,
+            }),
+          );
 
           onSuccess(list);
         }
@@ -63,23 +65,23 @@ export function requestRecommendFeed(
       }
     });
 
-    function parseRecommendNews(data: ArticleData[]): RecommendNews[] {
-        let list: RecommendNews[] = [];
-        data.forEach((item) => {
-          let news = {
-            articleId: item.article_id,
-            title: item.article_info.title,
-            subTitle: item.article_info.brief_content,
-            readTime: item.article_info.read_time,
-            viewCount: item.article_info.view_count,
-            collectCount: item.article_info.collect_count,
-            diggCount: item.article_info.digg_count,
-            commentCount: item.article_info.comment_count,
-            userName: item.author_user_info.user_name,
-            categoryName: item.category.category_name,
-          }
-          list.push(news);
-        })
-        return list;
-      }
+  function parseRecommendNews(data: ArticleData[]): RecommendNews[] {
+    const list: RecommendNews[] = [];
+    data.forEach((item) => {
+      const news = {
+        articleId: item.article_id,
+        title: item.article_info.title,
+        subTitle: item.article_info.brief_content,
+        readTime: item.article_info.read_time,
+        viewCount: item.article_info.view_count,
+        collectCount: item.article_info.collect_count,
+        diggCount: item.article_info.digg_count,
+        commentCount: item.article_info.comment_count,
+        userName: item.author_user_info.user_name,
+        categoryName: item.category.category_name,
+      };
+      list.push(news);
+    });
+    return list;
+  }
 }
