@@ -1,13 +1,30 @@
+import { Cache } from "@raycast/api";
 import { recommendApi } from "../api/recommend";
 import { ArticleData, RecommendFeedRespDto } from "../Dto/recommendRespDto";
 import { RecommendNews } from "../model/recommendNews";
 import { RecommendFeedCategory } from "../utils/recommendFeedCategory";
+
+const CACHE_DUATION_IN_MS = 10 * 60 * 1000;
+
+const cache = new Cache();
 
 export function requestRecommendFeed(
   categoryId: RecommendFeedCategory,
   onSuccess: (data: RecommendNews[]) => void,
   onError: (error: string) => void,
 ) {
+
+  const cachedData = cache.get(categoryId);
+  if (cachedData) {
+    const cachedEntry = JSON.parse(cachedData);
+    if (cachedEntry.timestamp + CACHE_DUATION_IN_MS > Date.now()) {
+      onSuccess(cachedEntry.list);
+      return;
+    } else {
+      console.log(`recommend feed cache expired: ${categoryId}`);
+    }
+  }
+
   recommendApi
     .recommendFeed(
       {
@@ -31,7 +48,13 @@ export function requestRecommendFeed(
           onError("请求失败");
         } else {
           console.log(data.data);
+          
           const list = parseRecommendNews(data.data);
+          cache.set(categoryId, JSON.stringify({
+            timestamp: Date.now(),
+            list: list
+          }))
+
           onSuccess(list);
         }
       } catch (error) {

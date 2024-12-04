@@ -10,3 +10,8 @@ export interface RecommendNews {
     userName: string;
     categoryName: string;
 }
+
+export type RecommendCache = {
+    list: RecommendNews[];
+    timestamp: number;
+}
