@@ -17,6 +17,8 @@ export default function Command() {
   let category = RecommendFeedCategory.iOS;
 
   function requestRecommendFeed() {
+    setIsLoading(true);
+    
     recommendApi.recommendFeed({
       uuid: "7293568760983307826",
       aid: "6587"
@@ -28,6 +30,8 @@ export default function Command() {
       cate_id: category,
       sort_type: 200
     }).then((res) => {
+      setIsLoading(false);
+
       try {
         const data = res.data as RecommendFeedRespDto
         if (data.err_no !== 0 || !data.data) {
@@ -42,6 +46,7 @@ export default function Command() {
           parseRecommendNews(data.data);
         }
       } catch (error) {
+        setIsLoading(false);
         showToast({
           title: "请求失败",
           message: error as string,
