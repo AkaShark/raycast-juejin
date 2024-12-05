@@ -3,7 +3,7 @@
   "name": "jue-jin",
   "title": "掘金",
   "description": "展示掘金各个分类下的推荐文章，支持选择切换不同类型的文章",
-  "icon": "extension-icon.png",
+  "icon": "icon.png",
   "author": "sharker_alice_sharker",
   "categories": [
     "News"
